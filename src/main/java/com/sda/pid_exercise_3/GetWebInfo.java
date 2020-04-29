@@ -8,15 +8,51 @@ import java.util.Scanner;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/**
+ * Class for retrieving information from API.
+ * @author ImanolIruretagoiena
+ * @version 2020.04.29
+ */
 public class GetWebInfo {
 
+	// Scanner for user input.
 	private Scanner keyboard;
+	// JSON object to store retrieved
 	private JSONObject object;
 	
+	/**
+	 * Constructor for the class. Initializes the scanner object.
+	 */
 	public GetWebInfo() {
 		keyboard = new Scanner(System.in);
 	}
 	
+	/**
+	 * Method which loads data from the given URL and saves is as a JSON object.
+	 * @param urlString URL from which to load the information.
+	 */
+	public void loadJSONObjectFromWebsite(String urlString) {
+		String response = null;
+		try {
+			URL url = new URL(urlString);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setRequestMethod("GET");
+			connection.addRequestProperty("User-Agent", 
+			"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)");
+			connection.connect();
+			Scanner responseScanner = new Scanner(connection.getInputStream());
+			while(responseScanner.hasNext()) {
+				response = responseScanner.nextLine();
+			}
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		object = new JSONObject(response);
+	}
+	
+	/**
+	 * Method which retrieves information about the Pokemon entered by the user.
+	 */
 	public void getPokemonInfo() {
 		System.out.println("Enter name of pokemon: ");
 		String pokemonInput = keyboard.nextLine().toLowerCase();
@@ -35,6 +71,9 @@ public class GetWebInfo {
 		}
 	}
 	
+	/**
+	 * Method which retrieves information about the location entered by the user.
+	 */
 	public void getLocationInfo() {
 		System.out.println("Enter name of location: ");
 		String locationInput = keyboard.nextLine().toLowerCase();
@@ -53,24 +92,5 @@ public class GetWebInfo {
 		String regionName = (String) region.get("name");
 		System.out.println("\n" + "Region: " + regionName);
 		
-	}
-	
-	public void loadJSONObjectFromWebsite(String urlString) {
-		String response = null;
-		try {
-			URL url = new URL(urlString);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			connection.addRequestProperty("User-Agent", 
-			"Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)");
-			connection.connect();
-			Scanner responseScanner = new Scanner(connection.getInputStream());
-			while(responseScanner.hasNext()) {
-				response = responseScanner.nextLine();
-			}
-		} catch(IOException e) {
-			e.printStackTrace();
-		}
-		object = new JSONObject(response);
 	}
 }
